@@ -13,3 +13,18 @@ export const refreshtoken = (data)=>{
 export const orderList = (data,params)=>{
   return request.post('/admin/order/list',data,{params})
 }
+
+// 删除订单
+export const orderdel = (data)=>{
+  return request.post('/admin/order/delete',data)
+}
+
+//退款功能
+export const refund = (data)=>{
+  return request.post('/admin/order/refund',data)
+}
+
+// 取消订单
+export const cancelorder = (data,parms)=>{
+  return request.post('/admin/order/cancel',data,{parms})
+}

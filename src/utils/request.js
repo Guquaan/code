@@ -41,7 +41,7 @@ request.interceptors.response.use(function (response) {
       console.log('code是512')
         ElMessage.error(response.data.msg)
     }
-    if(response.data.code === 403) //token过期的，需要续约
+    else if(response.data.code === 403) //token过期的，需要续约
     {
       console.log('第一个403')
         ElMessage.error(response.data.msg)
