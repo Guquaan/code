@@ -25,6 +25,21 @@ export const refund = (data)=>{
 }
 
 // 取消订单
-export const cancelorder = (data,parms)=>{
-  return request.post('/admin/order/cancel',data,{parms})
+export const cancelorder = (data,params)=>{
+  return request.post('/admin/order/cancel',data,{params})
+}
+
+// 查询快递轨迹
+export const ordertrace = (data,params)=> {
+  return request.post('/admin/order/trace',data,{params})
+}
+
+//实现优惠券退款
+export const returnCoupon = (data)=>{
+  return request.post('/admin/order/returnCoupon', data)
+}
+
+//改变订单状态
+export const statusChange = (data) =>{
+  return request.post('/admin/order/status',data)
 }

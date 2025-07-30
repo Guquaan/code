@@ -2,6 +2,7 @@ import {createRouter , createWebHashHistory} from 'vue-router'
 import Login from '../components/login/index.vue'
 import Home from '../components/home/index.vue'
 import Order from '../components/order/index.vue'
+import OrderBulid from '../components/Manger/orderBulid.vue'
 const routes = [
     {
         path:'/login',
@@ -15,6 +16,11 @@ const routes = [
             {
                 path:'/order',
                 component:Order,
+                meta:{}
+            },
+            {
+                path:'/orderBulid',
+                component:OrderBulid,
                 meta:{}
             }
         ]

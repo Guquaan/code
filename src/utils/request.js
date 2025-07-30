@@ -21,7 +21,14 @@ request.interceptors.request.use(function (config)  {
     //获取之前缓存在浏览器上的token
     const token = localStorage.getItem('token')
     //对于登陆不需要添加token
-    const whiteUrl = ['/admin/login/validate']
+    const whiteUrl = [
+      '/admin/login/validate', 
+      '/admin/login/checkToken',
+      '/admin/order/delete',
+      '/admin/order/refund',
+      '/admin/order/returnCoupon',
+      '/admin/order/status',
+    ]
     if(token&&!whiteUrl.includes(config.url)){
         config.headers['token'] = token
         console.log('对于其他不需要token接口的token',token)
@@ -35,15 +42,12 @@ request.interceptors.request.use(function (config)  {
 // 添加响应拦截器
 request.interceptors.response.use(function (response) {
     //接口异常的数据
-    console.log("相应拦截器的回调res",response)
     if(response.data.code === 512)
     {
-      console.log('code是512')
         ElMessage.error(response.data.msg)
     }
     else if(response.data.code === 403) //token过期的，需要续约
     {
-      console.log('第一个403')
         ElMessage.error(response.data.msg)
         //过期先清除相应的token
         const token = localStorage.getItem('token')

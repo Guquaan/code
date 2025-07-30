@@ -42,20 +42,49 @@
     type="warning">
         取消订单
     </el-button>
-    <el-button :icon="Star"size="small" />
-    <el-button type="danger" 
+    <el-button 
+    :icon="Promotion"
+    size="small"
+    color="#a0cfff"
+    @click="showTrace" >
+        查询快递轨迹
+    </el-button>
+    <el-button 
+    type="danger" 
     :icon="Delete" 
     size="small"
     @click="deleConfirm"
     >删除
-</el-button>
+    </el-button>
+    <el-button
+    color="#95d475"
+    :icon="WalletFilled"
+    size="small"
+    @click="returncou">
+        退优惠券
+    </el-button>
+    <el-button
+    size="small"
+    color="#c8c9cc"
+    :icon="Timer"
+    @click="collStatus = true">
+        更改状态码
+    </el-button>
     </div>
     <!-- 信息展示 -->
+     <div>
+        <span style="font-size:1.5vh">状态码注释：
+            -5：订单取消，-4：揽收取消，-3：已退款，-2:待退款，-1：订单异常，0：待支付<br>
+            1:更换快递，2：已支付，3：待揽收，4：已揽收，5：待补差，6待退差，7：已补差<br>
+            8:已退差，9：运输中，10：已送达
+        </span>
+     </div>
 <el-card>
     <el-table v-loading="loading" :data="search" 
     stripe
      style="width: 100%" :border="true" size="small"
-      @selection-change="handleSelectionChange">    
+      @selection-change="handleSelectionChange"
+      ref="tableRef">    
         <el-table-column type="selection" :selectable="selectable" width="55" />
         <el-table-column prop="trackId" label="订单跟踪Id"  />
         <el-table-column prop="uuid" label="用户唯一标识符"  />
@@ -264,14 +293,31 @@
             <el-table-column prop="updateAt" label="状态更新时间" />
         </el-table>
       </el-dialog>
+      <!-- 快递轨迹 -->
+       <el-dialog>
+
+       </el-dialog>
+        <!-- 修改订单状态 -->
+       <el-dialog
+       v-model="collStatus"
+       size="small"
+       width="50%">
+       请输入新的状态码：
+       <input v-model="newStatus" />
+       <br><br>
+       <div style="align-items: center;">
+        <el-button @click="collStatus = false" size="small">取消</el-button>
+       <el-button @click="changeStatus(newStatus)" size="small">确认</el-button>
+       </div>
+       </el-dialog>
 </template>
 
 <script setup>
 import { ref,reactive ,onMounted ,computed ,nextTick} from 'vue'
-import {orderList , orderdel ,refund ,cancelorder} from '../../api/index'
+import {orderList , orderdel ,refund ,cancelorder ,ordertrace ,returnCoupon,statusChange} from '../../api/index'
 import { ElMessage } from 'element-plus'
 import { nanoid } from 'nanoid'
-import {ShoppingCart,Delete,Edit, Message,Star,Plus ,Check , Close } from '@element-plus/icons-vue'
+import {ShoppingCart,Delete,Edit, WalletFilled,Timer,Promotion,Plus ,Check , Close } from '@element-plus/icons-vue'
 const order = ref([])
 const loading = ref(true)
 //懒加载页面数
@@ -303,11 +349,9 @@ const getorderlist = ()=>{
         current: orderlist.current,
         pageSize: orderlist.pageSize,
     },{token:token}).then(({data})=>{
-        console.log(data)
         if(data.code === 200){
             order.value = data.data
-            total.value = data.total
-
+            total.value = data.totals
         }
         else {
             ElMessage.error(data.msg)
@@ -379,11 +423,15 @@ const showInfo = (data = {}) => {
     infoShow.value = true
     
 }
-//编辑信息
+
+//功能实现
 const dialogFormVisable= ref(false)
 const selectTableData=ref([])
+const cou = ref([])
+const status = ref([])
 //控制勾选可以使用
 const selectable = () => true
+const tableRef = ref()
 const formRef = ref()
 const form = reactive({
     trackId:'',
@@ -435,6 +483,8 @@ const confirm = async (formEl) => {
 //获取勾选的信息
 const handleSelectionChange = (val)=>{
     selectTableData.value = val.map(item=>({trackId:item.trackId}))
+    cou.value = val.map(item => ({couponId:item.couponId}))
+    status.value = val.map(item =>({nowstatus:item.nowStatus}))
 }
 //对数据进行删除
 const deleConfirm = ()=>{
@@ -453,6 +503,7 @@ const deleConfirm = ()=>{
                 if(data.code === 500){
                     //重置勾选框
                     selectTableData.value = []
+                    tableRef.value.clearSelection()
                     ElMessage.error(`接口数据订单跟踪Id${idxId}删除失败，假数据进行删除`)
                 }
                 order.value = order.value.filter(item =>!idxId.includes(item.trackId))
@@ -468,18 +519,21 @@ const orderRefund = ()=>{
         console.log(selectTableData.value.length)
        return ElMessage.warning("请勾选一项需要退款的数据")
     } else if(selectTableData.value.length > 1){
+        selectTableData.value = []
+        tableRef.value.clearSelection()
         return ElMessage.warning("只能选择一项退款")
     } else {
         const refundidxId = selectTableData.value.map(item => item.trackId)
         refund({trackId:refundidxId[0],force:1}).then(({data})=>{
-            if(data.code === 200){
-
+            if(data.code === 200){ 
+                //重置勾选框
+                selectTableData.value = []
+                tableRef.value.clearSelection()
+                console.log(selectTableData.value)
                 ElMessage.success(`订单id${refundidxId[0]}`+data.msg + '退款')
             } 
         })
     } 
-    //重置勾选框
-    selectTableData.value = []
 }
 
 //取消订单
@@ -497,8 +551,22 @@ const cancel = ()=>{
             cancelorder({trackId:idxId[i]},{token:token}).then(({data})=>{
                 console.log(data)
                 if(data.code === 200){
+                                    orderList({
+                current: orderlist.current,
+                pageSize: orderlist.pageSize,
+                },{token:token}).then(({data})=>{
+                console.log(data)
+                if(data.code === 200){
+                    order.value = data.data
+                    total.value = data.totals
+                }
+                else {
+                    ElMessage.error(data.msg)
+                }
+                })
                     //重置勾选框
                     selectTableData.value = []
+                    tableRef.value.clearSelection()
                     ElMessage.success(`订单跟踪Id${idxId}取消${data.msg}`)
                 }else if(data.code === 702){
                     ElMessage.error(idxId[i] + data.msg)
@@ -506,6 +574,99 @@ const cancel = ()=>{
             })
         }
     }
+}
+
+//查询快递轨迹
+const traceData = ref([])
+const traceColl = ref(false)
+const showTrace = () =>{
+    if(!selectTableData.value.length){
+        console.log(selectTableData.value.length)
+       return ElMessage.warning("请勾选一项需要退款的数据")
+    } else if(selectTableData.value.length > 1){
+        selectTableData.value = []
+        tableRef.value.clearSelection()
+        return ElMessage.warning("只能选择一项退款")
+    } else {
+        const traceidxId = selectTableData.value.map(item => item.trackId)
+        console.log(traceidxId[0])
+        ordertrace({trackId:traceidxId[0]},{token:token}).then(({data})=>{
+            traceData.value = data.data
+            ElMessage.error(data.msg)
+        })
+    }
+}
+
+//退优惠券
+const returncou = () =>{
+    if(!selectTableData.value.length){
+        console.log(selectTableData.value.length)
+       return ElMessage.warning("请选择一项数据")
+    } else {
+        const couponidxId = selectTableData.value.map(item=>item.trackId)
+        const coupon = cou.value.map(item=>item.couponId)
+        console.log(couponidxId,coupon)
+        for(let i = 0 ; i<coupon.length ; i++){
+            returnCoupon({trackId:couponidxId[0],couponId:coupon[0]}).then(({data})=>{
+                if(data.code === 500){
+                    ElMessage.error('退优惠券' + data.msg)
+                    //重置勾选框
+                    selectTableData.value = []
+                    cou.value = []
+                    tableRef.value.clearSelection()
+                } else if(data.code === 200){
+                    ElMessage.success('退优惠券' + data.msg)
+                    //重置勾选框
+                    selectTableData.value = []
+                    cou.value = []
+                    tableRef.value.clearSelection()
+                }
+            })
+        }
+    }
+}
+
+// 修改订单状态
+const collStatus = ref(false)
+const newStatus = ref('')
+const changeStatus = (data)=>{
+    console.log(data)
+    if(!data){
+        return ElMessage.error('请输入修改的状态码')
+    }else {
+    if(!selectTableData.value.length){
+        console.log(selectTableData.value.length)
+        return ElMessage.warning("请勾选一项需要修改状态码的数据")
+    } else if(selectTableData.value.length > 1){
+        selectTableData.value = []
+        tableRef.value.clearSelection()
+        return ElMessage.warning("只能选择一项")
+    } else {
+        const idxId = selectTableData.value.map(item => item.trackId)
+        statusChange({trackId:idxId[0],status:data,force:1}).then(({data})=>{
+            if(data.code === 200){ 
+                orderList({
+                current: orderlist.current,
+                pageSize: orderlist.pageSize,
+                },{token:token}).then(({data})=>{
+                if(data.code === 200){
+                    order.value = data.data
+                    total.value = data.totals
+                }
+                else {
+                    ElMessage.error(data.msg)
+                }
+                })
+                //重置勾选框
+                selectTableData.value = []
+                tableRef.value.clearSelection()
+                newStatus.value = ''
+                ElMessage.success(`订单id${idxId[0]}`+data.msg + '修改')
+            } 
+        })
+    } 
+    }
+    collStatus.value = false
 }
 </script>
 
