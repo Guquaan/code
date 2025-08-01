@@ -43,3 +43,18 @@ export const returnCoupon = (data)=>{
 export const statusChange = (data) =>{
   return request.post('/admin/order/status',data)
 }
+
+//订单预下单
+export const orderPrepare = (data) =>{
+  return request.post('/admin/payorder/prepare',data)
+}
+
+//订单创建
+export const orderCreate = (data) =>{
+  return request.post('/admin/payorder/create',data)
+}
+
+// 绑定下单图片
+export const orderImg = (data,params) =>{
+  return request.post('/admin/payorder/bindPhoto', data,{params})
+}

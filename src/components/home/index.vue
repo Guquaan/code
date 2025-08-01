@@ -17,17 +17,9 @@
             <span>管理端下单</span>
           </template>
             <el-menu-item index="1-1" @click="router.push('/orderBulid')">预下单</el-menu-item>
-            <el-menu-item index="1-2">item two</el-menu-item>
+            <el-menu-item index="1-2" @click="router.push('/orderList')">下单列表</el-menu-item>
         </el-sub-menu>
-        <el-menu-item index="2">
-          <el-icon><user /></el-icon>
-          <span>Navigator Two</span>
-        </el-menu-item>
-        <el-menu-item index="3">
-          <el-icon><document /></el-icon>
-          <span>Navigator Three</span>
-        </el-menu-item>
-        <el-menu-item index="4"  @click="router.push('/order')">
+        <el-menu-item index="2"  @click="router.push('/order')">
           <el-icon><Coin /></el-icon>
           <span>订单管理</span>
         </el-menu-item>
@@ -68,7 +60,8 @@ const isCollapse = ()=>{
 }
 .header {
   background-color: #f5f5f5;
-  line-height: 60px;
-  font-size: 16px;
+  height: 5vh;
+  line-height: 6vh;
+  font-size: 2.5vh;
 }
 </style>

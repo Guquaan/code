@@ -3,6 +3,7 @@ import Login from '../components/login/index.vue'
 import Home from '../components/home/index.vue'
 import Order from '../components/order/index.vue'
 import OrderBulid from '../components/Manger/orderBulid.vue'
+import OrderList from '../components/Manger/orderList.vue'
 const routes = [
     {
         path:'/login',
@@ -22,7 +23,12 @@ const routes = [
                 path:'/orderBulid',
                 component:OrderBulid,
                 meta:{}
-            }
+            },
+            {
+                path:'/orderList',
+                component:OrderList,
+                meta:{}
+            },
         ]
        
     }

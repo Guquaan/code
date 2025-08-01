@@ -5,8 +5,9 @@ import App from './App.vue'
 import router from '../src/routers/index'
 import {refreshtoken} from './api/index'
 import * as ElementPlusIconsVue from '@element-plus/icons-vue'
+import { createPinia } from 'pinia'
 
-
+const pinia = createPinia()
 const app = createApp(App)
 
 for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
@@ -36,6 +37,8 @@ router.beforeEach((to,from,next)=>{
 
 //引入路由
 app.use(router)
+//引入pinia
+app.use(pinia)
 app.use(ElementPlus)
 app.use(ElementPlus, { size: 'small', zIndex: 3000 })
 app.mount('#app')

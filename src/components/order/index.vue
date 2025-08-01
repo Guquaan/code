@@ -67,7 +67,7 @@
     size="small"
     color="#c8c9cc"
     :icon="Timer"
-    @click="collStatus = true">
+    @click="collStatusChange">
         更改状态码
     </el-button>
     </div>
@@ -531,9 +531,34 @@ const orderRefund = ()=>{
                 tableRef.value.clearSelection()
                 console.log(selectTableData.value)
                 ElMessage.success(`订单id${refundidxId[0]}`+data.msg + '退款')
+                orderList({
+                current: orderlist.current,
+                pageSize: orderlist.pageSize,
+                },{token:token}).then(({data})=>{
+                if(data.code === 200){
+                    order.value = data.data
+                    total.value = data.totals
+                }
+                else {
+                ElMessage.error(data.msg)
+                }
+                })
             } 
         })
     } 
+    return  orderList({
+            current: orderlist.current,
+            pageSize: orderlist.pageSize,
+            },{token:token}).then(({data})=>{
+             console.log(data)
+            if(data.code === 200){
+                order.value = data.data
+                total.value = data.totals
+            }
+             else {
+             ElMessage.error(data.msg)
+        }
+        })
 }
 
 //取消订单
@@ -551,23 +576,22 @@ const cancel = ()=>{
             cancelorder({trackId:idxId[i]},{token:token}).then(({data})=>{
                 console.log(data)
                 if(data.code === 200){
-                                    orderList({
+                    //重置勾选框
+                    selectTableData.value = []
+                    tableRef.value.clearSelection()
+                    ElMessage.success(`订单跟踪Id${idxId}取消${data.msg}`)
+                orderList({
                 current: orderlist.current,
                 pageSize: orderlist.pageSize,
                 },{token:token}).then(({data})=>{
-                console.log(data)
                 if(data.code === 200){
                     order.value = data.data
                     total.value = data.totals
                 }
                 else {
-                    ElMessage.error(data.msg)
+                ElMessage.error(data.msg)
                 }
                 })
-                    //重置勾选框
-                    selectTableData.value = []
-                    tableRef.value.clearSelection()
-                    ElMessage.success(`订单跟踪Id${idxId}取消${data.msg}`)
                 }else if(data.code === 702){
                     ElMessage.error(idxId[i] + data.msg)
                 }
@@ -627,15 +651,20 @@ const returncou = () =>{
 }
 
 // 修改订单状态
+const collStatusChange = ()=>{
+    if(!selectTableData.value.length){
+        return ElMessage.warning("请勾选一项需要修改状态码的数据")
+    }else{
+        collStatus.value = true
+    }
+}
 const collStatus = ref(false)
 const newStatus = ref('')
 const changeStatus = (data)=>{
-    console.log(data)
     if(!data){
         return ElMessage.error('请输入修改的状态码')
     }else {
     if(!selectTableData.value.length){
-        console.log(selectTableData.value.length)
         return ElMessage.warning("请勾选一项需要修改状态码的数据")
     } else if(selectTableData.value.length > 1){
         selectTableData.value = []
@@ -645,6 +674,11 @@ const changeStatus = (data)=>{
         const idxId = selectTableData.value.map(item => item.trackId)
         statusChange({trackId:idxId[0],status:data,force:1}).then(({data})=>{
             if(data.code === 200){ 
+                //重置勾选框
+                selectTableData.value = []
+                tableRef.value.clearSelection()
+                newStatus.value = ''
+                ElMessage.success(`订单id${idxId[0]}状态码`+data.msg + '修改')
                 orderList({
                 current: orderlist.current,
                 pageSize: orderlist.pageSize,
@@ -654,18 +688,14 @@ const changeStatus = (data)=>{
                     total.value = data.totals
                 }
                 else {
-                    ElMessage.error(data.msg)
+                ElMessage.error(data.msg)
                 }
                 })
-                //重置勾选框
-                selectTableData.value = []
-                tableRef.value.clearSelection()
-                newStatus.value = ''
-                ElMessage.success(`订单id${idxId[0]}`+data.msg + '修改')
             } 
         })
     } 
     }
+
     collStatus.value = false
 }
 </script>
