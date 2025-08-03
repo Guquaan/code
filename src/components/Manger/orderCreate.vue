@@ -4,7 +4,6 @@
     v-model="visible"
     :before-close="handleClose"
     style="width:90%">
-    {{ returnData }}
     <h4>创建订单下单</h4>
     <el-table :data="props.returnData" border style="width: 100%">
     <el-table-column prop="trackId" label="订单跟踪Id"  />
@@ -30,9 +29,10 @@
 <script setup>
 import { watch, ref } from 'vue'
 import {orderCreate} from '../../api/index'
+import { getorderData } from '../../stores/store'
 const props = defineProps(['collCreat','returnData'])
 const emit = defineEmits(['closeDialog'])
-
+const store = getorderData()
 const visible = ref(props.collCreat)
 
 // 监听父组件传来的值，保持同步
@@ -47,9 +47,12 @@ const handleClose = () => {
 }
 //创建订单
 const creatOrder = ()=>{
-    orderCreate({trackId:props.returnData.value[0].trackId}).then(()=>{
-
-    })
+  //orderCreate({trackId:props.returnData.value[0].trackId}).then(()=>{})
+  store.setorderData({
+    orderData:props.returnData,
+    collCreatList:true,
+  })
+  handleClose()
 }
 </script>
 

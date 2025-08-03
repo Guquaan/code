@@ -1,8 +1,5 @@
 <template>
-<h4>预下单处理</h4>
-{{ formData }}
-{{ formData.recRef}} + {{ formData.senRef }}
-
+<div>订单预下单处理</div>
 <el-form
     ref="formRef"
     :model="formData"
@@ -335,9 +332,7 @@
                     }
                 store.setfromData({
                     formData:formData,
-                    orderData:returnData.value
                 })
-                console.log({...formData})
                 collCreat.value = true
             }
         })

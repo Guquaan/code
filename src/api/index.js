@@ -58,3 +58,8 @@ export const orderCreate = (data) =>{
 export const orderImg = (data,params) =>{
   return request.post('/admin/payorder/bindPhoto', data,{params})
 }
+
+// 预定单订单详细
+export const orderDetail = (data) =>{
+  return request.post('admin/payorder/detail',data)
+}

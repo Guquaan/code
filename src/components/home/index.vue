@@ -1,15 +1,14 @@
 <template>
    <div class="common-layout">
     <el-container>
-      <el-aside width="collapse ? '14vh' : '50vh'" class="el-aside">
-        <el-col style="width: 100%;">
+      <el-aside width="collapse ? '14vh' : '50vh'" height="100%">
       <el-menu
         default-active=""
-        class="el-menu-vertical-demo"
         :collapse="collapse"
+        @select="handleSelect"
       >
       <div>
-            <h5 style="text-align: center;">递达递</h5>
+        <h5 style="text-align: center;">递达递</h5>
           </div>
         <el-sub-menu index="1">
           <template #title>
@@ -24,7 +23,6 @@
           <span>订单管理</span>
         </el-menu-item>
       </el-menu>
-    </el-col>
       </el-aside>
       <el-container>
         <el-header class="header">
@@ -52,16 +50,30 @@ const isCollapse = ()=>{
   collapse.value = !collapse.value
 }
 
+const handleSelect = (key, keyPath) => {
+  console.log(key, keyPath)
+  localStorage.setItem('key',key)
+}
 </script>
 
-<style scoped>
-.common-layout {
-  height: 100%;
+<style lang="less" scoped>
+body{
+  margin: 0;
+  padding: 0;
 }
+
 .header {
   background-color: #f5f5f5;
   height: 5vh;
   line-height: 6vh;
   font-size: 2.5vh;
 }
+.common-layout{
+  height: 100%;
+    .el-container{
+      height: 100%;
+    }
+
+}
+ 
 </style>
