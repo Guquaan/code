@@ -31,8 +31,8 @@ const router = useRouter()
 const loginFormRef = ref()
 
 const loginForm = reactive({
-  username: '',
-  password: '',
+  username: 'admin',
+  password: '21232f297a57a5a743894a0e4a801fc3',
 })
 
 //校验规则

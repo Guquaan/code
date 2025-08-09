@@ -11,10 +11,12 @@
     <el-table-column prop="pdName" label="快递名字"  />
     <el-table-column prop="pdCompanyName" label="快递公司名字" />
     <el-table-column label="操作">
-        <template #default>
+        <template #default="scope">
             <el-button link type="primary" @click="InfoShow  = true">查看收件人信息</el-button>
+            <el-button link type="primary" @click="repay(scope.row.trackId)">补差</el-button>
         </template>
     </el-table-column>
+    
 </el-table>
 <el-dialog v-model="InfoShow">
     收件人姓名：{{formData.receiverName}}<br/>
@@ -27,10 +29,17 @@
 <script setup>
 import {ref} from 'vue'
 import { getFormData , getorderData } from '../../stores/store';
+import { repayOrder } from '../../api';
+import { ElMessage } from 'element-plus';
 const formData = getFormData().formData
 const collCreat = getorderData().collCreatList
 const orderData = collCreat ? getorderData().orderData : []
 const InfoShow = ref(false)
+const repay = (data) =>{
+    repayOrder({trackId:data}).then(({data})=>{
+        ElMessage.success(data.msg)
+    })
+}
 </script>
 
 <style scoped>

@@ -63,3 +63,38 @@ export const orderImg = (data,params) =>{
 export const orderDetail = (data) =>{
   return request.post('admin/payorder/detail',data)
 }
+
+//重新补差或支付
+export const repayOrder = (data) =>{
+  return request.post('/admin/payorder/repay',data)
+}
+
+// 信息中心更新状态
+export const statusUpdate = (data ,params) =>{
+  return request.post('/admin/msg/update' ,data,{params})
+}
+
+// 获取消息列表
+export const msgGet = (data,params) =>{
+  return request.post('/admin/msg/get',data,{params})
+}
+
+// 获取配置信息
+export const getSet = (data) =>{
+  return request.post('/admin/setting/get',data)
+}
+
+// 更新配置信息
+export const updateSet = (data ,params) =>{
+  return request.post('/admin/setting/update',data ,{params})
+}
+
+//新增配置信息
+export const postSet = (data,params) =>{
+  return request.post('/admin/setting/post',data, {params})
+}
+
+//上传图片
+export const imgPost = (data, params) =>{
+  return request.post('/admin/setting/uploadFile' , data, {params})
+}

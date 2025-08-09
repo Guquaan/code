@@ -18,6 +18,7 @@
     <el-table-column prop="pdCompanyId" label="快递公司ID" />
     <el-table-column prop="pdName" label="快递名字" />
     <el-table-column prop="pdCompanyName" label="快递公司名字" />
+    
   </el-table>
   <div class="buttonStyle">
     <el-button size="small" @click="handleClose">取消</el-button>

@@ -4,7 +4,7 @@ import { ElMessage } from 'element-plus';
 import { refreshtoken } from '../api/index'
 const request = axios.create({
     baseURL:'https://api.dda.vyitec.com',
-    timeout:5000,
+    timeout:10000,
     headers:{
         Accept: "application/json, text/plain, */*",
         'Content-Type': "application/json",
@@ -20,7 +20,7 @@ request.interceptors.request.use(function (config)  {
     // 在发送请求之前做些什么
     //获取之前缓存在浏览器上的token
     const token = localStorage.getItem('token')
-    //对于登陆不需要添加token
+    //对于不需要添加token
     const whiteUrl = [
       '/admin/login/validate', 
       '/admin/login/checkToken',
@@ -31,7 +31,7 @@ request.interceptors.request.use(function (config)  {
     ]
     if(token&&!whiteUrl.includes(config.url)){
         config.headers['token'] = token
-        console.log('对于其他不需要token接口的token',token)
+        console.log('对于需要token接口的token',config.url,token)
     }
     return config;
   }, function (error) {

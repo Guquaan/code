@@ -22,6 +22,14 @@
           <el-icon><Coin /></el-icon>
           <span>订单管理</span>
         </el-menu-item>
+        <el-menu-item index="3"  @click="router.push('/massagecenter')">
+          <el-icon><Message /></el-icon>
+          <span>信息中心</span>
+        </el-menu-item>
+        <el-menu-item index="4"  @click="router.push('/setlist')">
+          <el-icon><Setting /></el-icon>
+          <span>配置信息</span>
+        </el-menu-item>
       </el-menu>
       </el-aside>
       <el-container>

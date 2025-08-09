@@ -4,6 +4,8 @@ import Home from '../components/home/index.vue'
 import Order from '../components/order/index.vue'
 import OrderBulid from '../components/Manger/orderBulid.vue'
 import OrderList from '../components/Manger/orderList.vue'
+import MassageCenter from '../components/Massage/MassageCenter.vue'
+import SetList from '../components/Setting/setList.vue'
 const routes = [
     {
         path:'/login',
@@ -17,18 +19,29 @@ const routes = [
             {
                 path:'/order',
                 component:Order,
-                meta:{}
+                meta:{name:'订单管理'}
             },
             {
                 path:'/orderBulid',
                 component:OrderBulid,
-                meta:{}
+                meta:{name:'预下单创建'}
             },
             {
                 path:'/orderList',
                 component:OrderList,
-                meta:{}
+                meta:{name:'预下单列表'}
             },
+            {
+                path:'/massagecenter',
+                component:MassageCenter,
+                meta:{name:'信息中心',}
+            },
+            {
+                path:'/setlist',
+                component:SetList,
+                meta:{name:'配置信息'}
+            }
+
         ]
        
     }

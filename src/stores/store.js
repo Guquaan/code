@@ -35,3 +35,45 @@ export const getorderData = defineStore('orderData',{
         }
     }
 })
+
+// 实现面包屑功能
+ export const selectMenu = defineStore('',{
+    state:()=>({
+        // 面包屑列表
+        selectList:[],
+    }),
+    actions:{
+        setselectList(data){
+            
+        }
+    }
+ })
+
+//转换类型 
+export const getType = (data) =>{
+    const type = 
+        {
+            '1':'信息报错',
+            '2':'系统报错'
+        }
+    return type[data] || '未知'
+}
+
+// 转换等级
+export const getLevel = (data) =>{
+    const level = {
+        '1':'轻微',
+        '2':'中等',
+        '3':'严重'
+    }
+    return level[data] || '未知程度'
+}
+
+//转换状态
+export const getStatus = (data)=>{
+    const status = {
+    '0':'未处理',
+    '1':'处理中',
+    } 
+    return status[data] || '未知'
+}

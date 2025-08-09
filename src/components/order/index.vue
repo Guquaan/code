@@ -119,12 +119,13 @@
         </el-table-column>
     </el-table>
     <el-pagination 
-    background 
     v-model:page-size="orderlist.pageSize"
     v-model:current-page="currentPage"
-    layout="total, prev, pager, next, jumper" 
-    :total="total"
-    @update:current-page="handlePageChange"
+    layout="total, sizes, prev, pager, next, jumper" 
+    size="default"
+    :total="total || 100"
+    @size-change="handleSizeChange" 
+    @current-change="handlePageChange"
     />
 </el-card>
     <!-- 编辑数据 -->
@@ -310,6 +311,7 @@
        <el-button @click="changeStatus(newStatus)" size="small">确认</el-button>
        </div>
        </el-dialog>
+
 </template>
 
 <script setup>
@@ -321,8 +323,8 @@ import {ShoppingCart,Delete,Edit, WalletFilled,Timer,Promotion,Plus ,Check , Clo
 const order = ref([])
 const loading = ref(true)
 //懒加载页面数
-const currentPage = ref()
-const total = ref()
+const currentPage = ref(1)
+const total = ref(0)
 //订单传params
 const token = localStorage.getItem('token')
 //订单传data
@@ -349,9 +351,10 @@ const getorderlist = ()=>{
         current: orderlist.current,
         pageSize: orderlist.pageSize,
     },{token:token}).then(({data})=>{
+        
         if(data.code === 200){
             order.value = data.data
-            total.value = data.totals
+            total.value = data.total
         }
         else {
             ElMessage.error(data.msg)
@@ -401,6 +404,12 @@ const handlePageChange = (page)=>{
     getorderlist()
     
 }
+const handleSizeChange = (size) => {
+  console.log('每页条数：', size);
+  pageSize.value = size; // 更新每页条数
+  currentPage.value = 1; // 重置到第一页
+  // loadData({ page: 1, pageSize: size });
+};
 // 控制搜索数据
 const sousuo = ()=>{
     searchData.trackId = data.trackId
@@ -710,5 +719,12 @@ const changeStatus = (data)=>{
 .searchStyle{
     display: flex;
     
+}
+:deep(.el-card) {
+  overflow: visible !important; /* 临时添加，测试是否被遮挡 */
+}
+:deep(.el-pagination) {
+  border: 1px solid red; /* 测试是否显示 */
+  margin-top: 20px; /* 确保与表格有间距，避免被遮挡 */
 }
 </style>
