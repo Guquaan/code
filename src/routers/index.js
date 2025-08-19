@@ -6,6 +6,8 @@ import OrderBulid from '../components/Manger/orderBulid.vue'
 import OrderList from '../components/Manger/orderList.vue'
 import MassageCenter from '../components/Massage/MassageCenter.vue'
 import SetList from '../components/Setting/setList.vue'
+import Text from '../components/text/text.vue'
+import Renderer from '../components/text/Renderer.vue'
 const routes = [
     {
         path:'/login',
@@ -14,36 +16,46 @@ const routes = [
     {
         path:'/', 
         component:Home,
-        meta:{name:'控制页面'},
+        meta:{name:'控制页面' , title:'首页'},
         children:[
             {
-                path:'/order',
+                path:'order',
                 component:Order,
-                meta:{name:'订单管理'}
+                meta:{name:'订单管理' ,title:'订单管理'}
             },
             {
-                path:'/orderBulid',
+                path:'orderBulid',
                 component:OrderBulid,
-                meta:{name:'预下单创建'}
+                meta:{name:'预下单创建',title:'预下单'}
             },
             {
-                path:'/orderList',
+                path:'orderList',
                 component:OrderList,
-                meta:{name:'预下单列表'}
+                meta:{name:'预下单列表',title:'下单列表'}
             },
             {
-                path:'/massagecenter',
+                path:'massagecenter',
                 component:MassageCenter,
-                meta:{name:'信息中心',}
+                meta:{name:'信息中心',title:'信息中心'}
             },
             {
-                path:'/setlist',
+                path:'setlist',
                 component:SetList,
-                meta:{name:'配置信息'}
+                meta:{name:'配置信息' ,title:'配置信息'}
             }
 
         ]
        
+    },
+    {
+        path:'/text',
+        component:Text,
+        mata:{name:'测试'}
+    },
+    {
+        path:'/render',
+        component:Renderer,
+        mata:{name:'渲染器'}
     }
 ]
 

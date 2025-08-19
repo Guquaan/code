@@ -17,7 +17,7 @@
     size="small"
     style="width: 10rem"
     />
-    <el-button type="primary" @click="formData.module = 'banner'" size="small"> 重置</el-button>
+    <el-button type="primary" @click="formData.module = 'banner' ; formData.current = 1" size="small"> 重置</el-button>
   </div>
 </div> 
 <div>
@@ -115,10 +115,11 @@
     <div v-if="formData.module === 'question'" class="popup-content">
       问题：{{anser.question}}<br/>
       <p>回答：  {{
-    typeof anser?.value?.answer === 'string'
-      ? anser.value.answer.replace(/\[(\d+)\]/g, '\n[$1]')
-      : (anser?.value?.answer || '')
-  }}</p>
+          typeof anser?.answer === 'string'
+            ? anser.answer.replace(/\[(\d+)\]/g, '\n[$1]')
+            : (anser?.answer || '')
+              }}
+  </p>
     </div>
    </el-dialog>
 <!-- 控制新增的弹窗 -->
@@ -158,7 +159,7 @@
   <el-button 
   v-if="formData.module === 'banner'||formData.module === 'eula'||formData.module === 'question' ||formData.module === 'orderTips'"
   @click="addSet(formData.module,typeSelect,valueInput)">创建</el-button>
-  <el-button @click="addSet(formData.module,typeSelect,imageUrl)">创建</el-button>
+  <el-button v-if="formData.module === 'serviceCode'" @click="addSet(formData.module,typeSelect,imageUrl)">创建</el-button>
   </el-dialog>
 </template>
 
@@ -257,17 +258,18 @@ const updateMsg = (data) =>{
   })
 }
 
-// 答复信息显示
+// 答复问题和订单提示信息显示
 const collAnser = ref(false)
-const anser = ref()
+const anser = ref({})
 const showAnser = (data) =>{
+
   collAnser.value = true
   if(formData.module === 'orderTips'){
     anser.value = data
   } else if(formData.module === 'question') {
     anser.value = JSON.parse(data)
-    
-  }
+  }  
+  console.log(anser.value)
 }
 //新增
 const iscollAdd = ref(false)
@@ -333,7 +335,7 @@ const handleFileSelect = (e) => {
     imageUrl.value = event.target.result;
   };
   reader.readAsDataURL(file);
-  imgPost({file:imageUrl.value},{token}).then(({data})=>{
+  imgPost({file:file},{token}).then(({data})=>{
     if(data.code === 200){
       ElMessage.success('上传'+data.msg)
     } else {

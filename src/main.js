@@ -28,8 +28,8 @@ router.beforeEach((to,from,next)=>{
         next()
     } 
     //有token访问其他页面的情况下
-    else if(token){
-        next()
+    else if(token && to.path === '/'){
+        next('/orderBulid')
     } else {
         next()
     }

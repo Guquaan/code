@@ -80,8 +80,14 @@
         </span>
      </div>
 <el-card>
-    <el-table v-loading="loading" :data="search" 
+    <!-- 展示其他信息 -->
+    <div class="loading-animation" id="loadingAnimation">
+    <div class="spinner"></div>
+    <div class="loading-text">数据加载中，请稍候...</div>
+    </div>
+    <el-table :data="search" 
     stripe
+    v-if = "text === 'end' ? true : false "
      style="width: 100%" :border="true" size="small"
       @selection-change="handleSelectionChange"
       ref="tableRef">    
@@ -166,7 +172,6 @@
         </div>
     </template>
      </el-dialog>
-     <!-- 展示其他信息 -->
       <el-dialog
       v-model = "infoShow"
       width="95%"
@@ -347,25 +352,39 @@ const searchData = reactive({
 })
 //从接口中获取数据
 const getorderlist = ()=>{
-    orderList({
+        showLoading('start')
+        orderList({
         current: orderlist.current,
         pageSize: orderlist.pageSize,
     },{token:token}).then(({data})=>{
-        
         if(data.code === 200){
             order.value = data.data
+            text = 'end'
+            showLoading('end')
             total.value = data.total
         }
         else {
+            showLoading('end')
             ElMessage.error(data.msg)
         }
     })
+    .catch(error => {
+        console.log(error); // 捕获异步错误
+    })
+    .finally(() => {
+    showLoading('end');
+    })
 }
 //初始化数据
+// 显示加载状态
+var text = 'start'
+function showLoading(action) {
+    const loadingAnimation = document.getElementById('loadingAnimation');
+    if (loadingAnimation) {
+        loadingAnimation.style.display = action === 'start' ? 'flex' : 'none';
+    }
+}
 onMounted(()=>{
-    setTimeout(()=>{
-    loading.value = !loading.value
-},500)
     getorderlist()
 })
 //列表搜索
@@ -707,6 +726,9 @@ const changeStatus = (data)=>{
 
     collStatus.value = false
 }
+
+
+        
 </script>
 
 <style lang="css" scoped>
@@ -726,5 +748,32 @@ const changeStatus = (data)=>{
 :deep(.el-pagination) {
   border: 1px solid red; /* 测试是否显示 */
   margin-top: 20px; /* 确保与表格有间距，避免被遮挡 */
+}
+
+.spinner {
+  width: 50px;
+  height: 50px;
+  border: 5px solid rgba(52, 152, 219, 0.2);
+  border-top: 5px solid #3498db;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.loading-animation {
+    display: none;
+    justify-content: center;
+    margin: 20px 0;
+}
+.loading-text {
+    text-align: center;
+    font-size: 1.2rem;
+    color: #1e3c72;
+    font-weight: 500;
+    margin-top: 20px;
 }
 </style>
